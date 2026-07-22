@@ -9,9 +9,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
 
+type Payout = {
+  _id: string;
+  amount: number;
+  method: string;
+  accountDetails: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+};
+
 function PayoutManagement() {
   const { data: session } = useSession();
-  const token = (session as any)?.accessToken;
+  const token = session?.user?.accessToken;
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -53,7 +67,7 @@ function PayoutManagement() {
   });
 
   const payouts = data?.data || [];
-  const filtered = statusFilter === "all" ? payouts : payouts.filter((p: any) => p.status === statusFilter);
+  const filtered = statusFilter === "all" ? payouts : payouts.filter((p: Payout) => p.status === statusFilter);
   const total = data?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
@@ -92,7 +106,7 @@ function PayoutManagement() {
             ) : filtered.length === 0 ? (
               <TableRow><TableCell colSpan={7} className="text-center py-8 text-gray-500">No payouts found</TableCell></TableRow>
             ) : (
-              filtered.map((payout: any) => (
+              filtered.map((payout: Payout) => (
                 <TableRow key={payout._id}>
                   <TableCell>
                     <div>

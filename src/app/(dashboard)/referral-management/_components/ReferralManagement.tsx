@@ -9,9 +9,31 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
+type ReferredUser = {
+  _id: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  role?: string;
+  createdAt: string;
+};
+
+type Referrer = {
+  _id: string;
+  profileImage?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  role?: string;
+  referralCode?: string;
+  referredCount?: number;
+  balance?: number;
+  referredUsers?: ReferredUser[];
+};
+
 function ReferralManagement() {
   const { data: session } = useSession();
-  const token = (session as any)?.accessToken;
+  const token = session?.user?.accessToken;
   const [page, setPage] = useState(1);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const limit = 10;
@@ -73,7 +95,7 @@ function ReferralManagement() {
             ) : referrers.length === 0 ? (
               <TableRow><TableCell colSpan={7} className="text-center py-8 text-gray-500">No referral data found</TableCell></TableRow>
             ) : (
-              referrers.map((referrer: any) => (
+              referrers.map((referrer: Referrer) => (
                 <React.Fragment key={referrer._id}>
                   <TableRow className="cursor-pointer hover:bg-gray-50" onClick={() => setExpandedUser(expandedUser === referrer._id ? null : referrer._id)}>
                     <TableCell>
@@ -93,12 +115,12 @@ function ReferralManagement() {
                     <TableCell className="font-semibold">{referrer.referredCount}</TableCell>
                     <TableCell className="font-semibold text-green-600">&euro;{(referrer.balance || 0).toFixed(2)}</TableCell>
                   </TableRow>
-                  {expandedUser === referrer._id && referrer.referredUsers?.length > 0 && (
+                  {expandedUser === referrer._id && (referrer.referredUsers?.length ?? 0) > 0 && (
                     <TableRow>
                       <TableCell colSpan={7} className="bg-gray-50 p-4">
                         <p className="text-sm font-medium mb-2 text-gray-600">Referred Users:</p>
                         <div className="space-y-2">
-                          {referrer.referredUsers.map((u: any) => (
+                          {referrer.referredUsers?.map((u: ReferredUser) => (
                             <div key={u._id} className="flex items-center gap-4 text-sm bg-white p-2 rounded border">
                               <span className="font-medium">{u.firstName} {u.lastName || ""}</span>
                               <span className="text-gray-500">{u.email}</span>
