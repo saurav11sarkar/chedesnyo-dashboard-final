@@ -9,9 +9,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
 
+type Promotion = {
+  _id: string;
+  targetType: string;
+  duration: number;
+  isFree: boolean;
+  amountPaid?: number;
+  status: "active" | "expired" | "cancelled" | "pending";
+  views?: number;
+  clicks?: number;
+  startDate?: string;
+  endDate?: string;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+};
+
 function PromotionManagement() {
   const { data: session } = useSession();
-  const token = (session as any)?.accessToken;
+  const token = session?.user?.accessToken;
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -94,7 +112,7 @@ function PromotionManagement() {
             ) : promotions.length === 0 ? (
               <TableRow><TableCell colSpan={9} className="text-center py-8 text-gray-500">No promotions found</TableCell></TableRow>
             ) : (
-              promotions.map((promo: any) => (
+              promotions.map((promo: Promotion) => (
                 <TableRow key={promo._id}>
                   <TableCell>
                     <p className="font-medium">{promo.user?.firstName} {promo.user?.lastName || ""}</p>

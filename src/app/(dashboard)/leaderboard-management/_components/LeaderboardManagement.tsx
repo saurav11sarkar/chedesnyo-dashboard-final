@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Trophy, Medal } from "lucide-react";
 import { PageHeader } from "@/components/page-header/PageHeader";
 import { useQuery } from "@tanstack/react-query";
@@ -10,9 +9,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
+type LeaderboardEntry = {
+  userId: string;
+  rank: number;
+  badge: string;
+  totalDeals: number;
+  totalEarned: number;
+  avgRating: number;
+  user?: {
+    profileImage?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+};
+
 function LeaderboardManagement() {
   const { data: session } = useSession();
-  const token = (session as any)?.accessToken;
+  const token = session?.user?.accessToken;
   const [filter, setFilter] = useState("yearly");
 
   const { data, isLoading } = useQuery({
@@ -72,7 +86,7 @@ function LeaderboardManagement() {
             ) : leaders.length === 0 ? (
               <TableRow><TableCell colSpan={6} className="text-center py-8 text-gray-500">No leaderboard data</TableCell></TableRow>
             ) : (
-              leaders.map((item: any) => (
+              leaders.map((item: LeaderboardEntry) => (
                 <TableRow key={item.userId} className={item.rank <= 3 ? "bg-yellow-50/50" : ""}>
                   <TableCell className="font-bold text-lg">#{item.rank}</TableCell>
                   <TableCell>{getBadgeIcon(item.badge)}</TableCell>

@@ -5,7 +5,6 @@ import { useEffect } from "react";
 export default function GoogleTranslatePatch() {
   useEffect(() => {
     const originalRemoveChild = Node.prototype.removeChild;
-    // @ts-expect-error - patching prototype
     Node.prototype.removeChild = function <T extends Node>(child: T): T {
       if (child.parentNode !== this) {
         if (child.parentNode) {
@@ -17,7 +16,6 @@ export default function GoogleTranslatePatch() {
     };
 
     const originalInsertBefore = Node.prototype.insertBefore;
-    // @ts-expect-error - patching prototype
     Node.prototype.insertBefore = function <T extends Node>(newNode: T, referenceNode: Node | null): T {
       if (referenceNode && referenceNode.parentNode !== this) {
         return newNode;
