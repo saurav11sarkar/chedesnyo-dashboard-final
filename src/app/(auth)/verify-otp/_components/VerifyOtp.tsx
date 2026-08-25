@@ -99,9 +99,8 @@ function VerifyOtp() {
     },
     onSuccess: (data) => {
       toast.success(data.message || "OTP verified successfully");
-      console.log("Reset Token:", data?.resetToken);
-      localStorage.setItem("refreshToken", data?.resetToken);
-      router.push(`/change-password?email=${email}`);
+      sessionStorage.setItem("passwordResetToken", data?.data?.resetToken || "");
+      router.push(`/change-password?email=${encodeURIComponent(email)}`);
     },
     onError: (err) => {
       toast.error(err.message || "Invalid OTP, try again");

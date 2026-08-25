@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "api.dicebear.com",
-      "res.cloudinary.com",
-      "avatar.iran.liara.run" // Add any other external domains you use
+    remotePatterns: [
+      { protocol: "https", hostname: "api.dicebear.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "avatar.iran.liara.run" },
     ],
   },
 };
