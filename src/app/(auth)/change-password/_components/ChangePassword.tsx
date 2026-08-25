@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -28,8 +28,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 // Minimal Form Schema
 const formSchema = z
   .object({
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters").regex(/[0-9]/, "Password must contain a number"),
+    confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -40,7 +40,11 @@ function ChangePassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  const resetToken = localStorage.getItem("refreshToken") || "";
+  const [resetToken, setResetToken] = useState("");
+
+  useEffect(() => {
+    setResetToken(sessionStorage.getItem("passwordResetToken") || "");
+  }, []);
 
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -78,6 +82,7 @@ function ChangePassword() {
       return res.json();
     },
     onSuccess: (data) => {
+      sessionStorage.removeItem("passwordResetToken");
       toast.success(data.message || "Password reset successful");
       router.push("/signin");
     },
