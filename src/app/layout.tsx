@@ -27,16 +27,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nl" suppressHydrationWarning>
-      <head>
-        <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async />
-        <script dangerouslySetInnerHTML={{ __html: `
-          function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'nl', includedLanguages: 'nl,en', autoDisplay: false}, 'google_translate_element');
-          }
-          window.__GOOGLE_TRANSLATION_CONFIG__ = { languages: [{title:'Nederlands',name:'nl'},{title:'English',name:'en'}], defaultLanguage:'nl' };
-          window.dispatchEvent(new Event('translationConfigReady'));
-        `}} />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
