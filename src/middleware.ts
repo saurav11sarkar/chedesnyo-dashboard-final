@@ -3,6 +3,12 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const sessionCookieName = "next-auth.session-token-dashboard";
+const publicAuthPaths = new Set([
+  "/signin",
+  "/forgot-password",
+  "/verify-otp",
+  "/change-password",
+]);
 
 function getJwtExpiry(token?: unknown) {
   if (typeof token !== "string") {
@@ -41,7 +47,7 @@ export async function middleware(request: NextRequest) {
   const isAccessTokenExpired =
     accessTokenExpiry !== null && accessTokenExpiry * 1000 <= Date.now();
 
-  if ((!token || isAccessTokenExpired) && pathname !== "/signin") {
+  if ((!token || isAccessTokenExpired) && !publicAuthPaths.has(pathname)) {
     return redirectToSignIn(request);
   }
 
