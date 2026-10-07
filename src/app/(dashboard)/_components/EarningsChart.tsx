@@ -58,7 +58,7 @@ export function EarningsOverviewChart() {
   const [year, setYear] = useState<number>(currentYear);
 
   const { data: apiResponse, isLoading, error } = useQuery<ApiResponse>({
-    queryKey: ["earningsOverviewData", year],
+    queryKey: ["earningsOverviewData", year, TOKEN],
     queryFn: async () => {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/dashboard/monthly-earnings?year=${year}`,
@@ -72,6 +72,7 @@ export function EarningsOverviewChart() {
       if (!res.ok) throw new Error("Failed to fetch earnings overview data");
       return res.json();
     },
+    enabled: !!TOKEN,
   });
 
   const chartData = useMemo(() => {
