@@ -30,7 +30,9 @@ function getJwtExpiry(token?: unknown) {
 }
 
 function redirectToSignIn(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/signin", request.url));
+  const response = NextResponse.redirect(
+    new URL("/signin", process.env.NEXTAUTH_URL || request.url)
+  );
   response.cookies.delete(sessionCookieName);
   return response;
 }
@@ -52,7 +54,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (token && !isAccessTokenExpired && pathname === "/signin") {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(
+      new URL("/", process.env.NEXTAUTH_URL || request.url)
+    );
   }
 
   return NextResponse.next();
