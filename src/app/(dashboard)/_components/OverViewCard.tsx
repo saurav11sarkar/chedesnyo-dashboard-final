@@ -11,10 +11,9 @@ function OverViewCard() {
   const { data: session } = useSession();
   const user = session?.user;
   const TOKEN = user?.accessToken;
-  console.log("session", session);
   const { data: overViewData, isLoading, isError } = useQuery({
 
-    queryKey: ["overviewData"],
+    queryKey: ["overviewData", TOKEN],
     queryFn: async () => {
 
       const res = await fetch(
@@ -30,6 +29,7 @@ function OverViewCard() {
       if (!res.ok) throw new Error("Failed to fetch overview data");
       return res.json();
     },
+    enabled: !!TOKEN,
   });
 
   // ✅ Handle loading or error states

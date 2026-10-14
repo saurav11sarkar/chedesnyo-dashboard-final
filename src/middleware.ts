@@ -3,6 +3,12 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 const sessionCookieName = "next-auth.session-token-dashboard";
+const publicAuthPaths = new Set([
+  "/signin",
+  "/forgot-password",
+  "/verify-otp",
+  "/change-password",
+]);
 
 function getJwtExpiry(token?: unknown) {
   if (typeof token !== "string") {
@@ -24,7 +30,9 @@ function getJwtExpiry(token?: unknown) {
 }
 
 function redirectToSignIn(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/signin", request.url));
+  const response = NextResponse.redirect(
+    new URL("/signin", process.env.NEXTAUTH_URL || request.url)
+  );
   response.cookies.delete(sessionCookieName);
   return response;
 }
@@ -41,17 +49,19 @@ export async function middleware(request: NextRequest) {
   const isAccessTokenExpired =
     accessTokenExpiry !== null && accessTokenExpiry * 1000 <= Date.now();
 
-  if ((!token || isAccessTokenExpired) && pathname !== "/signin") {
+  if ((!token || isAccessTokenExpired) && !publicAuthPaths.has(pathname)) {
     return redirectToSignIn(request);
   }
 
   if (token && !isAccessTokenExpired && pathname === "/signin") {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(
+      new URL("/", process.env.NEXTAUTH_URL || request.url)
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|favicon.ico).*)"],
+  matcher: ["/((?!api|_next|images/|favicon.ico).*)"],
 };
