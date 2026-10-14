@@ -4,10 +4,23 @@ import Script from "next/script";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Language, readLanguage, saveLanguage, translationConfig } from "@/lib/translation";
 
+export interface GoogleTranslateInstance {
+  restore?: () => void;
+  G?: {
+    Ed?: (
+      sourceLang: string,
+      targetLang: string,
+      callback: () => void,
+      targetElement: HTMLElement,
+      force: boolean
+    ) => void;
+  };
+}
+
 type TranslateElementConstructor = new (
   options: { pageLanguage: string; includedLanguages: string; autoDisplay: boolean; multilanguagePage: boolean },
   elementId: string,
-) => unknown;
+) => GoogleTranslateInstance;
 
 declare global {
   interface Window {
@@ -35,19 +48,6 @@ const LanguageContext = createContext<LanguageContextValue>({
 
 export function useLanguage() {
   return useContext(LanguageContext);
-}
-
-interface GoogleTranslateInstance {
-  restore?: () => void;
-  G?: {
-    Ed?: (
-      sourceLang: string,
-      targetLang: string,
-      callback: () => void,
-      targetElement: HTMLElement,
-      force: boolean
-    ) => void;
-  };
 }
 
 export default function TranslateProvider({ children }: { children: React.ReactNode }) {
