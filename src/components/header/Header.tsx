@@ -39,7 +39,7 @@ export default function Header() {
       <div className="flex items-center space-x-2"></div>
 
       <div className="relative flex items-center space-x-3">
-        <LanguageSwitcher />
+        <LanguageSwitcher variant="compact" />
         <div
           ref={avatarRef}
           className="flex items-center space-x-2 text-white text-sm cursor-pointer hover:bg-white/10 rounded-lg px-2 py-1 transition-colors"

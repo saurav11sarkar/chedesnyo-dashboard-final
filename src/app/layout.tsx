@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import AppProvider from "@/provider/AppProvider";
 import GoogleTranslatePatch from "@/components/GoogleTranslatePatch";
+import TranslateProvider from "@/provider/TranslateProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,10 +30,12 @@ export default function RootLayout({
     <html lang="nl" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <GoogleTranslatePatch />
-        <div id="google_translate_element" style={{ display: 'none' }} />
-        <AppProvider>{children}</AppProvider>
+        <TranslateProvider>
+          <AppProvider>{children}</AppProvider>
+        </TranslateProvider>
       </body>
     </html>
   );

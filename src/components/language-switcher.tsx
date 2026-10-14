@@ -1,74 +1,81 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import { parseCookies, setCookie } from "nookies";
+import { translationConfig, Language } from "@/lib/translation";
+import { useLanguage } from "@/provider/TranslateProvider";
 
-type GoogleTranslationConfig = {
-  defaultLanguage: string;
-  languages: { name: string; title: string }[];
-};
-
-declare global {
-  interface Window {
-    __GOOGLE_TRANSLATION_CONFIG__?: GoogleTranslationConfig;
-  }
+interface LanguageSwitcherProps {
+  variant?: "compact" | "full";
+  className?: string;
 }
 
-const COOKIE_NAME = "googtrans";
+export default function LanguageSwitcher({ variant = "full", className = "" }: LanguageSwitcherProps) {
+  const { language, changeLanguage, isTranslating } = useLanguage();
 
-const LanguageSwitcherComponent = () => {
-  const [currentLang, setCurrentLang] = useState("nl");
-  const [config, setConfig] = useState<GoogleTranslationConfig | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handleConfig = () => {
-      const translationConfig = window.__GOOGLE_TRANSLATION_CONFIG__;
-      if (!translationConfig) return;
-      setConfig(translationConfig);
-      const cookie = parseCookies()[COOKIE_NAME];
-      const lang = cookie?.split("/")?.[2] || translationConfig.defaultLanguage;
-      setCurrentLang(lang);
-    };
-
-    if (window.__GOOGLE_TRANSLATION_CONFIG__) {
-      handleConfig();
-    }
-
-    window.addEventListener("translationConfigReady", handleConfig);
-    return () => window.removeEventListener("translationConfigReady", handleConfig);
-  }, []);
-
-  const switchLang = (lang: string) => {
-    setCookie(undefined, COOKIE_NAME, `/auto/${lang}`, { path: "/" });
-    if (typeof window !== "undefined") {
-      window.location.reload();
-    }
-  };
-
-  if (!config) return null;
+  if (variant === "compact") {
+    return (
+      <div
+        className={`notranslate inline-flex items-center p-0.5 rounded-full bg-gray-100 border border-gray-200 select-none ${className}`}
+        translate="no"
+        role="group"
+        aria-label={language === "en" ? "Select Language" : "Selecteer Taal"}
+      >
+        {translationConfig.languages.map(({ name, title }) => {
+          const isActive = language === name;
+          return (
+            <button
+              key={name}
+              type="button"
+              lang={name}
+              disabled={isTranslating}
+              aria-pressed={isActive}
+              onClick={() => changeLanguage(name as Language)}
+              className={`px-2.5 py-1 text-xs font-semibold rounded-full transition-all duration-200 cursor-pointer ${
+                isActive
+                  ? "bg-green-600 text-white shadow-sm"
+                  : "text-gray-600 hover:text-green-700 hover:bg-gray-200/60"
+              }`}
+              title={title}
+            >
+              {name.toUpperCase()}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2">
-      {config.languages.map((l) => (
-        <button
-          key={l.name}
-          onClick={() => switchLang(l.name)}
-          className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-            currentLang === l.name
-              ? "bg-green-600 text-white"
-              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-          }`}
-        >
-          {l.title}
-        </button>
-      ))}
+    <div
+      className={`notranslate flex items-center justify-center gap-2 p-2 flex-wrap ${className}`}
+      translate="no"
+      role="group"
+      aria-label={language === "en" ? "Select Language" : "Selecteer Taal"}
+    >
+      <span className="text-xs font-medium text-gray-500 mr-1 hidden sm:inline">
+        {language === "en" ? "Language:" : "Taal:"}
+      </span>
+      <div className="inline-flex items-center p-1 rounded-lg bg-gray-100 border border-gray-200 gap-1">
+        {translationConfig.languages.map(({ name, title }) => {
+          const isActive = language === name;
+          return (
+            <button
+              key={name}
+              type="button"
+              lang={name}
+              disabled={isTranslating}
+              aria-pressed={isActive}
+              onClick={() => changeLanguage(name as Language)}
+              className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer ${
+                isActive
+                  ? "bg-green-600 text-white shadow-sm"
+                  : "text-gray-700 hover:text-green-700 hover:bg-white"
+              }`}
+            >
+              {title}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
-};
-
-const LanguageSwitcher = dynamic(() => Promise.resolve(LanguageSwitcherComponent), { ssr: false });
-
-export default LanguageSwitcher;
+}
