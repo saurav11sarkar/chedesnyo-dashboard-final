@@ -37,13 +37,26 @@ export function useLanguage() {
   return useContext(LanguageContext);
 }
 
+interface GoogleTranslateInstance {
+  restore?: () => void;
+  G?: {
+    Ed?: (
+      sourceLang: string,
+      targetLang: string,
+      callback: () => void,
+      targetElement: HTMLElement,
+      force: boolean
+    ) => void;
+  };
+}
+
 export default function TranslateProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>(translationConfig.defaultLanguage);
   const [isTranslating, setIsTranslating] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [scriptFailed, setScriptFailed] = useState(false);
   const initialized = useRef(false);
-  const translateInstanceRef = useRef<any>(null);
+  const translateInstanceRef = useRef<GoogleTranslateInstance | null>(null);
 
   const triggerGoogleTranslation = useCallback((targetLang: Language): boolean => {
     if (typeof document === "undefined") return false;
@@ -100,7 +113,16 @@ export default function TranslateProvider({ children }: { children: React.ReactN
       // Translate to target language (e.g. English)
       // 1. Direct engine call with force flag to translate all dynamic nodes
       try {
-        const elementInst = translateInstanceRef.current ?? (window as any).google?.translate?.TranslateElement?.getInstance?.();
+        const win = typeof window !== "undefined" ? (window as unknown as {
+          google?: {
+            translate?: {
+              TranslateElement?: {
+                getInstance?: () => GoogleTranslateInstance;
+              };
+            };
+          };
+        }) : undefined;
+        const elementInst = translateInstanceRef.current ?? win?.google?.translate?.TranslateElement?.getInstance?.();
         if (elementInst?.G && typeof elementInst.G.Ed === "function") {
           elementInst.G.Ed("auto", targetLang, () => {}, document.documentElement, true);
         }

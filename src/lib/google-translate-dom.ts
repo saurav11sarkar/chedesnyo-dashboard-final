@@ -110,7 +110,6 @@ export function installGoogleTranslateDomPatch(root: Node): () => void {
     return wrapper;
   };
 
-  const actualNode = (node: Node) => replacementFor(node)?.wrapper ?? node;
   const recordMove = (node: Node, parent: Node) => {
     const replacement = replacements.get(node);
     if (replacement && replacement.wrapper.parentNode === parent) {
@@ -153,8 +152,8 @@ export function installGoogleTranslateDomPatch(root: Node): () => void {
     try {
       originalInsertBefore.call(this, target, reference);
       recordMove(newNode, this);
-    } catch (error: any) {
-      if (error?.name === "HierarchyRequestError") {
+    } catch (error: unknown) {
+      if ((error as { name?: string })?.name === "HierarchyRequestError") {
         return newNode;
       }
       throw error;
@@ -171,8 +170,8 @@ export function installGoogleTranslateDomPatch(root: Node): () => void {
     try {
       originalAppendChild.call(this, target);
       recordMove(newNode, this);
-    } catch (error: any) {
-      if (error?.name === "HierarchyRequestError") {
+    } catch (error: unknown) {
+      if ((error as { name?: string })?.name === "HierarchyRequestError") {
         return newNode;
       }
       throw error;
@@ -197,8 +196,8 @@ export function installGoogleTranslateDomPatch(root: Node): () => void {
     }
     try {
       originalReplaceChild.call(this, target, oldNode);
-    } catch (error: any) {
-      if (error?.name === "HierarchyRequestError") {
+    } catch (error: unknown) {
+      if ((error as { name?: string })?.name === "HierarchyRequestError") {
         return child;
       }
       throw error;
