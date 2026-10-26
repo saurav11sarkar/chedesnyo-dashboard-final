@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface EarningsData {
   month: string;
+  
   totalEarnings: number;
 }
 
