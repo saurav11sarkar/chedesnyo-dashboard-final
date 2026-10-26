@@ -1,11 +1,15 @@
-import React from 'react'
+import React from "react";
+import LanguageSwitcher from "@/components/language-switcher";
 
-function layout({children}: {children: React.ReactNode}) {
+function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className=''>
-        {children}
+    <div>
+      <div className="fixed right-4 top-4 z-50">
+        <LanguageSwitcher variant="compact" />
+      </div>
+      {children}
     </div>
-  )
+  );
 }
 
-export default layout
+export default Layout;

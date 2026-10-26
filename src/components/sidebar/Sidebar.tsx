@@ -3,26 +3,42 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, LogOut, Grip, ShoppingBasket, Flag, Wallet, Share2, Megaphone, Trophy } from "lucide-react";
+import {
+  BarChart3,
+  BriefcaseBusiness,
+  ClipboardList,
+  Factory,
+  FileText,
+  Flag,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  Megaphone,
+  Settings,
+  Share2,
+  Trophy,
+  UsersRound,
+  Wallet,
+} from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import LogoutModal from "../Dialog/LogOutModal";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Revenue from Sales user", href: "/revenue-sales-user", icon: LayoutDashboard },
-  { name: "Assignments Request", href: "/assignments-request", icon: LayoutDashboard },
-  { name: "Courses Request", href: "/courses-request", icon: Grip },
-  { name: "Business representative User", href: "/business-representative-user", icon: ShoppingBasket },
-  { name: "Sales Representative User", href: "/seles-representative-user", icon: ShoppingBasket },
-  { name: "Industry List", href: "/industry-list", icon: ShoppingBasket },
-  { name: "Blog Management", href: "/blog-management", icon: ShoppingBasket },
+  { name: "Revenue from Sales user", href: "/revenue-sales-user", icon: BarChart3 },
+  { name: "Assignments Request", href: "/assignments-request", icon: ClipboardList },
+  { name: "Courses Request", href: "/courses-request", icon: GraduationCap },
+  { name: "Business representative User", href: "/business-representative-user", icon: BriefcaseBusiness },
+  { name: "Sales Representative User", href: "/seles-representative-user", icon: UsersRound },
+  { name: "Industry List", href: "/industry-list", icon: Factory },
+  { name: "Blog Management", href: "/blog-management", icon: FileText },
   { name: "Reports Management", href: "/reports", icon: Flag },
   { name: "Payout Management", href: "/payout-management", icon: Wallet },
   { name: "Referral Management", href: "/referral-management", icon: Share2 },
   { name: "Promotion Management", href: "/promotion-management", icon: Megaphone },
   { name: "Leaderboard", href: "/leaderboard-management", icon: Trophy },
-  { name: "Settings", href: "/settings", icon: ShoppingBasket },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -30,21 +46,22 @@ export function Sidebar() {
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
   return (
-    <div className="flex h-screen sticky top-0 w-[420px] flex-col z-50 shadow-[0px_16px_48px_0px_#00000029] bg-gray-50">
-      {/* Logo */}
-      <div className="h-[100px] flex items-center justify-center px-4 my-7">
-        <div className="h-full w-32 relative">
+    <aside className="fixed inset-y-0 left-0 z-50 flex w-80 flex-col border-r border-slate-200 bg-white shadow-[4px_0_24px_rgba(15,23,42,0.06)]">
+      <div className="flex h-20 shrink-0 items-center border-b border-slate-100 px-6">
+        <Link href="/" className="relative block h-12 w-32" aria-label="Chedesnyo dashboard home">
           <Image
             src="/images/chedsnyoLogo.png"
             alt="Logo"
             fill
             className="object-contain"
           />
-        </div>
+        </Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-4 flex flex-col items-center justify-start overflow-y-auto mt-3">
+      <nav
+        aria-label="Dashboard navigation"
+        className="flex-1 space-y-1 overflow-y-auto px-3 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {navigation.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -55,22 +72,22 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex w-full mx-auto items-center justify-start gap-3 px-5 py-3.5 text-sm font-medium transition-all duration-200",
+                "group flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-[#0080001A] text-[#008000]"
-                  : "text-[#5B6574] hover:bg-slate-600/50 hover:text-white"
+                  ? "bg-emerald-50 text-emerald-700 shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               )}
             >
               <item.icon
                 className={cn(
-                  "h-6 w-6 transition-colors duration-200",
-                  isActive ? "text-[#008000]" : ""
+                  "h-5 w-5 shrink-0 transition-colors duration-200",
+                  isActive ? "text-emerald-600" : "text-slate-400 group-hover:text-slate-600"
                 )}
               />
               <span
                 className={cn(
-                  "font-normal text-[20px] leading-[120%] transition-colors duration-200",
-                  isActive ? "text-[#008000] font-medium" : ""
+                  "leading-5 transition-colors duration-200",
+                  isActive ? "font-semibold" : "font-medium"
                 )}
               >
                 {item.name}
@@ -80,22 +97,18 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Logout fixed at bottom */}
-      <div className="p-3">
-        <div
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer 
-                     bg-gradient-to-r from-red-500/10 to-transparent 
-                     text-red-600 font-semibold text-base transition-all duration-300 
-                     hover:from-red-600 hover:to-red-700 hover:text-white hover:shadow-md"
+      <div className="shrink-0 border-t border-slate-100 p-3">
+        <button
+          type="button"
+          className="group flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
           onClick={() => setIsLogoutOpen(true)}
         >
-          <LogOut className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" />
+          <LogOut className="h-5 w-5 transition-transform duration-200 group-hover:-translate-x-0.5" />
           <span>Log Out</span>
-        </div>
+        </button>
       </div>
 
-      {/* Logout modal */}
       <LogoutModal isOpen={isLogoutOpen} setIsOpen={setIsLogoutOpen} />
-    </div>
+    </aside>
   );
 }

@@ -4,17 +4,13 @@ import React from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="min-h-screen bg-slate-50">
       <Header />
-      <div className="flex">
-        <Sidebar />
-        <div className="w-full mt-[100px] p-8">
-         <div className="z-0">
-           {children}
-         </div>
-        </div>
-      </div>
-    </>
+      <Sidebar />
+      <main className="ml-80 min-h-screen pt-20">
+        <div className="p-6 lg:p-8">{children}</div>
+      </main>
+    </div>
   );
 }
 
